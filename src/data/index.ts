@@ -56,43 +56,5 @@ export const skills: Skill[] = [
   { name: 'APIs REST',  icon: '🔗', level: 90, category: 'backend' },
 ]
 
-import { javaPixCode, nodeAuthCode, reactDashboardCode } from './snippets'
+export const projects: Project[] = []
 
-export const projects: Project[] = [
-  {
-    id: 1,
-    label: 'Sistema de Pagamentos',
-    title: 'Gateway de Pagamentos Pix',
-    description: 'Sistema robusto para processamento de pagamentos via Pix com integração a múltiplos bancos, gerenciamento de webhooks e conciliação automática. Construído com arquitetura de microserviços e foco em alta disponibilidade.',
-    tags: ['Java', 'Spring Boot', 'PostgreSQL', 'Docker', 'Kafka'],
-    github: 'https://github.com/pvolympio/payment-gateway',
-    demo: null,
-    featured: true,
-    codeSnippet: javaPixCode,
-    language: 'java'
-  },
-  {
-    id: 2,
-    label: 'API de Usuários',
-    title: 'Serviço de Autenticação e Autorização',
-    description: 'API completa para gestão de usuários com JWT, refresh tokens, controle de acesso baseado em papéis (RBAC) e integração com provedores sociais (Google, GitHub). Implementa melhores práticas de segurança OWASP.',
-    tags: ['Node.js', 'Express', 'PostgreSQL', 'Redis', 'JWT'],
-    github: 'https://github.com/pvolympio/auth-service',
-    demo: null,
-    featured: false,
-    codeSnippet: nodeAuthCode,
-    language: 'javascript'
-  },
-  {
-    id: 3,
-    label: 'Dashboard Administrativo',
-    title: 'Painel de Métricas em Tempo Real',
-    description: 'Dashboard interativo para visualização de métricas de negócio e sistema em tempo real utilizando WebSockets. Integra com múltiplas fontes de dados e oferece exportação de relatórios personalizáveis.',
-    tags: ['React', 'Node.js', 'Socket.io', 'PostgreSQL', 'Chart.js'],
-    github: 'https://github.com/pvolympio/admin-dashboard',
-    demo: null,
-    featured: false,
-    codeSnippet: reactDashboardCode,
-    language: 'javascript'
-  },
-]
