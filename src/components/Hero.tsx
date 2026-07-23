@@ -1,12 +1,17 @@
 'use client'
+
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Github, Linkedin, Mail, ArrowDown } from 'lucide-react'
-import { person } from '@/data'
+import { useTranslations } from 'next-intl'
+import { person, projects } from '@/data'
 
-const roles = ['Backend Developer', 'Fullstack Developer', 'Arquiteto de Software', 'Problem Solver']
+const roles = ['Backend Developer', 'Fullstack Developer', 'APIs REST', 'Java & Node.js']
 
 export default function Hero() {
+  const tHero = useTranslations('hero')
+  const tAccess = useTranslations('accessibility')
+
   const [roleIdx, setRoleIdx] = useState(0)
   const [displayed, setDisplayed] = useState('')
   const [deleting, setDeleting] = useState(false)
@@ -39,6 +44,9 @@ export default function Hero() {
 
   const fade = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } }
 
+  const primaryCtaHref = projects && projects.length > 0 ? '#projetos' : '#contato'
+  const primaryCtaLabel = projects && projects.length > 0 ? 'Ver Projetos' : tHero('ctaContact')
+
   return (
     <section
       id="home"
@@ -49,7 +57,6 @@ export default function Hero() {
         padding: '0 2rem',
       }}
     >
-      {/* Radial glow center */}
       <div style={{
         position: 'absolute', top: '40%', left: '50%',
         transform: 'translate(-50%, -50%)',
@@ -63,7 +70,6 @@ export default function Hero() {
           variants={{ show: { transition: { staggerChildren: 0.12 } } }}
           initial="hidden" animate="show"
         >
-          {/* Mono tag */}
           <motion.div variants={fade} transition={{ duration: 0.6 }}>
             <span style={{
               fontFamily: 'var(--font-mono)', fontSize: 13,
@@ -71,35 +77,30 @@ export default function Hero() {
               display: 'flex', alignItems: 'center', gap: 10,
               marginBottom: 28,
             }}>
-              <span style={{
-                width: 32, height: 1,
-                background: 'var(--accent)', display: 'inline-block',
-              }} />
-              Olá, mundo. Eu sou
+              <span style={{ width: 32, height: 1, background: 'var(--accent)', display: 'inline-block' }} />
+              Paulo Victor Olympio
             </span>
           </motion.div>
 
-          {/* Name */}
           <motion.h1
             variants={fade} transition={{ duration: 0.7 }}
             style={{
               fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(3rem, 8vw, 7rem)',
+              fontSize: 'clamp(2.8rem, 7vw, 6.5rem)',
               fontWeight: 800,
-              lineHeight: 0.95,
-              letterSpacing: '-3px',
+              lineHeight: 1.0,
+              letterSpacing: '-2px',
               marginBottom: 16,
-              color: '#fff',
+              color: 'var(--text)',
             }}
           >
             Paulo<br />
             <span className="shimmer-text">Victor</span>{' '}
-            <span style={{ color: 'var(--bg3)', WebkitTextStroke: '2px var(--accent)' }}>
+            <span style={{ color: 'transparent', WebkitTextStroke: '2px var(--accent)' }}>
               Olympio
             </span>
           </motion.h1>
 
-          {/* Typewriter */}
           <motion.div
             variants={fade} transition={{ duration: 0.6 }}
             style={{
@@ -120,7 +121,6 @@ export default function Hero() {
             }} />
           </motion.div>
 
-          {/* Quote */}
           <motion.blockquote
             variants={fade} transition={{ duration: 0.6 }}
             style={{
@@ -134,16 +134,15 @@ export default function Hero() {
               marginBottom: 44,
             }}
           >
-            "{person.tagline}"
+            "{tHero('tagline')}"
           </motion.blockquote>
 
-          {/* CTAs */}
           <motion.div
             variants={fade} transition={{ duration: 0.6 }}
             style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 56 }}
           >
             <motion.a
-              href="#projetos"
+              href={primaryCtaHref}
               whileHover={{ scale: 1.04, boxShadow: '0 0 30px rgba(105,89,205,0.5)' }}
               whileTap={{ scale: 0.97 }}
               style={{
@@ -152,13 +151,13 @@ export default function Hero() {
                 background: 'var(--accent)',
                 color: '#fff', borderRadius: 8,
                 fontWeight: 600, fontSize: 15,
-                transition: 'all 0.2s',
+                transition: 'all 0.2s', textDecoration: 'none'
               }}
             >
-              Ver Projetos
+              {primaryCtaLabel}
             </motion.a>
             <motion.a
-              href={person.github} target="_blank"
+              href="#sobre"
               whileHover={{ scale: 1.04, borderColor: 'var(--accent2)' }}
               whileTap={{ scale: 0.97 }}
               style={{
@@ -168,43 +167,35 @@ export default function Hero() {
                 color: 'var(--accent2)', borderRadius: 8,
                 fontWeight: 600, fontSize: 15,
                 background: 'transparent',
-                transition: 'all 0.2s',
+                transition: 'all 0.2s', textDecoration: 'none'
               }}
             >
-              <Github size={16} /> GitHub
+              {tHero('ctaAbout')}
             </motion.a>
           </motion.div>
 
-          {/* Social icons */}
           <motion.div
             variants={fade} transition={{ duration: 0.6 }}
             style={{ display: 'flex', gap: 20, alignItems: 'center' }}
           >
             {[
-              { href: person.github,   Icon: Github,   label: 'GitHub'   },
-              { href: person.linkedin, Icon: Linkedin, label: 'LinkedIn' },
-              { href: `mailto:${person.email}`, Icon: Mail, label: 'Email' },
+              { href: person.github, Icon: Github, label: tAccess('socialGithub') },
+              { href: person.linkedin, Icon: Linkedin, label: tAccess('socialLinkedin') },
+              { href: `mailto:${person.email}`, Icon: Mail, label: tAccess('socialEmail') },
             ].map(({ href, Icon, label }) => (
               <motion.a
-                key={label} href={href} target="_blank"
-                title={label}
+                key={href} href={href} target="_blank"
+                rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+                aria-label={label}
                 whileHover={{ scale: 1.2, color: 'var(--accent2)' }}
                 style={{ color: 'var(--muted)', transition: 'color 0.2s' }}
               >
                 <Icon size={20} />
               </motion.a>
             ))}
-            <span style={{
-              width: 1, height: 40,
-              background: 'var(--border2)',
-              display: 'inline-block',
-            }} />
-            <span style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12, color: 'var(--muted)',
-              writingMode: 'vertical-rl',
-            }}>
-              scroll down
+            <span style={{ width: 1, height: 40, background: 'var(--border2)', display: 'inline-block' }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--muted)' }}>
+              {tHero('scrollDown')}
             </span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
@@ -217,7 +208,6 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Big decorative number */}
       <div style={{
         position: 'absolute', right: '-2%', top: '50%',
         transform: 'translateY(-50%)',
@@ -226,8 +216,7 @@ export default function Hero() {
         fontWeight: 800, lineHeight: 1,
         color: 'transparent',
         WebkitTextStroke: '1px rgba(105,89,205,0.12)',
-        userSelect: 'none',
-        pointerEvents: 'none',
+        userSelect: 'none', pointerEvents: 'none',
       }}>
         BE
       </div>

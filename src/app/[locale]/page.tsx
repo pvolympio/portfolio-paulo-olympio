@@ -13,7 +13,7 @@ export default function Home() {
       <ParticleBackground />
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Navbar />
-        <main>
+        <main id="main-content">
           <Hero />
           <About />
           <Skills />

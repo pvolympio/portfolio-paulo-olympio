@@ -1,23 +1,30 @@
 'use client'
+
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
-import { Github, ExternalLink, ArrowUpRight } from 'lucide-react'
 import { projects } from '@/data'
 import { SectionTitle } from './About'
 import ProjectCodeViewer from './ProjectCodeViewer'
+import { useTranslations } from 'next-intl'
 
 export default function Projects() {
+  const t = useTranslations('projects')
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
+
+  // Non-negotiable requirement: Hide section completely when projects array is empty
+  if (!projects || projects.length === 0) {
+    return null
+  }
 
   return (
     <section id="projetos" style={{ padding: '8rem 0', position: 'relative' }}>
       <div className="section-container" ref={ref}>
-        <SectionTitle label="Portfólio" title="Projetos" />
+        <SectionTitle label={t('label')} title={t('title')} />
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {projects.map((project, i) => {
-            const realCode = project.codeSnippet || '// Código do projeto não disponível'
+            const realCode = project.codeSnippet || '// Código do projeto'
             const language = project.language || 'javascript'
 
             return (
@@ -42,29 +49,21 @@ export default function Projects() {
                   transition: 'border-color 0.3s'
                 }}
               >
-                {/* Top accent bar */}
                 <div style={{
                   position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: 3,
+                  top: 0, left: 0, right: 0, height: 3,
                   background: `linear-gradient(90deg, var(--accent) ${i * 25}%, var(--accent2) 100%)`
                 }} />
 
-                {/* Number decoration */}
                 <div style={{
                   position: 'absolute',
-                  right: 24,
-                  top: '50%',
+                  right: 24, top: '50%',
                   transform: 'translateY(-50%)',
                   fontFamily: 'var(--font-display)',
-                  fontSize: 80,
-                  fontWeight: 800,
+                  fontSize: 80, fontWeight: 800,
                   color: 'transparent',
                   WebkitTextStroke: '1px rgba(105,89,205,0.1)',
-                  userSelect: 'none',
-                  lineHeight: 1
+                  userSelect: 'none', lineHeight: 1
                 }}>
                   {String(i + 1).padStart(2, '0')}
                 </div>
@@ -78,28 +77,6 @@ export default function Projects() {
               </motion.div>
             )
           })}
-
-          {/* Add project placeholder */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.4 }}
-            style={{
-              border: '1.5px dashed rgba(105,89,205,0.25)',
-              borderRadius: 18,
-              padding: '2rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 12,
-              color: 'var(--muted)',
-              fontSize: 14,
-              minHeight: 100
-            }}
-          >
-            <span style={{ fontSize: 24, opacity: 0.4 }}>+</span>
-            Adicione seus projetos reais no arquivo <code style={{ color: 'var(--accent2)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>src/data/index.ts</code>
-          </motion.div>
         </div>
       </div>
     </section>

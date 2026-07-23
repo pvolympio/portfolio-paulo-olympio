@@ -1,41 +1,54 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { z } from 'zod';
 
-// Inicializa o Resend apenas se a chave da API existir no .env
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const contactSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().email().max(254),
+  message: z.string().trim().min(5).max(2000),
+  website: z.string().optional() // Honeypot field for anti-spam
+});
+
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function POST(request: Request) {
   try {
-    const { name, email, message } = await request.json();
-
-    if (!name || !email || !message) {
-      return NextResponse.json({ error: 'Faltam dados obrigatórios' }, { status: 400 });
+    const body = await request.json();
+    
+    // Check honeypot field
+    if (body.website && body.website.length > 0) {
+      return NextResponse.json({ error: 'Spam detected' }, { status: 400 });
     }
 
-    if (resend) {
-      // Tenta enviar o e-mail através da API da Resend
-      await resend.emails.send({
-        from: 'Portfolio Contact <onboarding@resend.dev>',
-        to: ['pvolympio@gmail.com'],
-        subject: `Nova mensagem de ${name} do Portfólio`,
-        text: `Nome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`,
-        replyTo: email,
-      });
-      
-      return NextResponse.json({ success: true, message: 'E-mail enviado via Resend' });
-    } else {
-      // Fallback para logs de desenvolvimento se não houver Chave de API
-      console.log('=== E-Mail Simulado (Log Backend) ===');
-      console.log(`De: ${name} (${email})`);
-      console.log(`Mensagem:\n${message}\n=====================================`);
-      
-      // Delay simulando request HTTP
-      await new Promise(r => setTimeout(r, 1000));
-      
-      return NextResponse.json({ success: true, message: 'Simulação realizada com sucesso' });
+    const parseResult = contactSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 });
     }
+
+    const { name, email, message } = parseResult.data;
+
+    if (!resend) {
+      // Return 503 Service Unavailable when email sending is not configured
+      return NextResponse.json(
+        { error: 'service_unavailable', message: 'Serviço de e-mail temporariamente indisponível' },
+        { status: 503 }
+      );
+    }
+
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Portfolio Contact <onboarding@resend.dev>';
+    const destEmail = process.env.CONTACT_DEST_EMAIL || 'pvolympio@gmail.com';
+
+    await resend.emails.send({
+      from: fromEmail,
+      to: [destEmail],
+      subject: `[Portfólio] Nova mensagem de ${name}`,
+      text: `Nome: ${name}\nEmail: ${email}\n\nMensagem:\n${message}`,
+      reply_to: email,
+    });
+
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error('Erro na rota de envio original:', error);
-    return NextResponse.json({ error: 'Erro ao processar contato' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro ao processar mensagem' }, { status: 500 });
   }
 }

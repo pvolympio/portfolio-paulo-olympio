@@ -1,1 +1,71 @@
-{}
+{
+  "nav": {
+    "about": "About",
+    "skills": "Skills",
+    "projects": "Projects",
+    "contact": "Contact"
+  },
+  "hero": {
+    "role": "Backend & Fullstack Developer",
+    "tagline": "Programming is not about language; it is about logic, architecture, and impact.",
+    "ctaContact": "Get in touch",
+    "ctaAbout": "Learn more",
+    "scrollDown": "Scroll down"
+  },
+  "about": {
+    "label": "Presentation",
+    "title": "About Me",
+    "p1": "Developer focused on backend engineering, RESTful API architecture, and building robust web applications. Experienced with Java, Node.js, and Python, prioritizing maintainability and clean software practices.",
+    "p2": "I believe great solutions come from combining clear logic, well-thought architecture, and clean code. I continuously strive to improve delivery quality and tackle complex technical challenges.",
+    "specialtyLabel": "Primary Specialty",
+    "specialtyValue": "Backend Engineering & APIs"
+  },
+  "skills": {
+    "label": "Technologies",
+    "title": "Technical Skills",
+    "backend": "Backend Development",
+    "devops": "DevOps & Containerization",
+    "frontend": "Frontend Development",
+    "database": "Databases"
+  },
+  "projects": {
+    "label": "Portfolio",
+    "title": "Featured Projects"
+  },
+  "contact": {
+    "label": "Let's connect",
+    "title": "Contact",
+    "subtitle": "Have a project or a technical question? Send a message using the form below or connect via social networks.",
+    "nameLabel": "Your Name",
+    "namePlaceholder": "E.g. John Doe",
+    "emailLabel": "Your Email",
+    "emailPlaceholder": "example@domain.com",
+    "messageLabel": "Your Message",
+    "messagePlaceholder": "Type your message here...",
+    "sendButton": "Send Message",
+    "sendingButton": "Sending...",
+    "success": "Message sent successfully! I will reply shortly.",
+    "errorValidation": "Please fill in all fields correctly.",
+    "error503Title": "Form Temporarily Unavailable",
+    "error503Desc": "The direct email service is currently not configured in this environment.",
+    "directEmail": "Send direct email",
+    "linkedIn": "View LinkedIn profile",
+    "errorUnexpected": "An error occurred while sending. Please try again later."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "backToTop": "Back to top"
+  },
+  "seo": {
+    "title": "Paulo Victor Olympio | Backend & Fullstack Developer",
+    "description": "Professional portfolio of Paulo Victor Olympio. Fullstack Developer focused on Backend, Java, Node.js, TypeScript, and software architecture."
+  },
+  "accessibility": {
+    "skipLink": "Skip to main content",
+    "themeToggle": "Toggle light/dark theme",
+    "languageToggle": "Toggle language (Portuguese / English)",
+    "socialGithub": "GitHub Profile",
+    "socialLinkedin": "LinkedIn Profile",
+    "socialEmail": "Send email to Paulo Victor"
+  }
+}

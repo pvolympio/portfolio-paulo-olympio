@@ -1,19 +1,28 @@
 'use client'
+
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
-import { skills } from '@/data'
+import { skills, Skill } from '@/data'
 import { SectionTitle } from './About'
+import { useTranslations } from 'next-intl'
 
 export default function Skills() {
+  const t = useTranslations('skills')
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
+
+  const categories: Array<{ id: Skill['category']; title: string }> = [
+    { id: 'backend', title: t('backend') },
+    { id: 'database', title: t('database') },
+    { id: 'devops', title: t('devops') },
+    { id: 'frontend', title: t('frontend') },
+  ]
 
   return (
     <section id="skills" style={{
       padding: '8rem 0', position: 'relative',
       background: 'linear-gradient(180deg, transparent 0%, rgba(105,89,205,0.03) 50%, transparent 100%)',
     }}>
-      {/* Decorative line */}
       <div style={{
         position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
         width: 1, height: '100%',
@@ -22,72 +31,68 @@ export default function Skills() {
       }} />
 
       <div className="section-container" ref={ref}>
-        <SectionTitle label="Tecnologias" title="Skills" />
+        <SectionTitle label={t('label')} title={t('title')} />
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-          gap: 14,
-        }}>
-          {skills.map((skill, i) => (
-            <motion.div
-              key={skill.name}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{
-                scale: 1.04,
-                boxShadow: '0 0 24px rgba(105,89,205,0.35)',
-                borderColor: 'var(--accent)',
-              }}
-              style={{
-                background: 'var(--bg3)',
-                border: '1px solid var(--border)',
-                borderRadius: 14, padding: '1.4rem 1rem',
-                textAlign: 'center',
-                cursor: 'default',
-                transition: 'border-color 0.2s',
-                position: 'relative', overflow: 'hidden',
-              }}
-            >
-              {/* Level bar at bottom */}
-              <div style={{
-                position: 'absolute', bottom: 0, left: 0,
-                height: 2,
-                width: `${skill.level}%`,
-                background: 'linear-gradient(90deg, var(--accent), var(--accent2))',
-                borderRadius: '0 2px 0 0',
-              }} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 24 }}>
+          {categories.map((cat, catIdx) => {
+            const catSkills = skills.filter((s) => s.category === cat.id)
+            if (catSkills.length === 0) return null
 
-              <div style={{ fontSize: 28, marginBottom: 10 }}>{skill.icon}</div>
-              <div style={{
-                fontWeight: 600, fontSize: 14, color: 'var(--text)',
-                marginBottom: 4,
-              }}>
-                {skill.name}
-              </div>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontSize: 11,
-                color: 'var(--accent)',
-              }}>
-                {skill.level}%
-              </div>
-            </motion.div>
-          ))}
-        </div>
+            return (
+              <motion.div
+                key={cat.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: catIdx * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  background: 'var(--bg3)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 18,
+                  padding: '1.5rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 16
+                }}
+              >
+                <div style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: 'var(--accent2)',
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                  borderBottom: '1px solid var(--border)',
+                  paddingBottom: 10
+                }}>
+                  {cat.title}
+                </div>
 
-        {/* Big decorative text */}
-        <div style={{
-          textAlign: 'center', marginTop: 80,
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(60px, 10vw, 140px)',
-          fontWeight: 800,
-          color: 'transparent',
-          WebkitTextStroke: '1px rgba(105,89,205,0.1)',
-          userSelect: 'none',
-          letterSpacing: '-4px',
-        }}>
-          BACKEND
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+                  {catSkills.map((skill) => (
+                    <motion.div
+                      key={skill.name}
+                      whileHover={{ scale: 1.03, borderColor: 'var(--accent)' }}
+                      style={{
+                        background: 'var(--bg2)',
+                        border: '1px solid var(--border)',
+                        borderRadius: 10,
+                        padding: '10px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        transition: 'border-color 0.2s',
+                      }}
+                    >
+                      <span style={{ fontSize: 20 }}>{skill.icon}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
+                        {skill.name}
+                      </span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
       </div>
     </section>

@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "about": "Sobre",
+    "skills": "Habilidades",
+    "projects": "Projetos",
+    "contact": "Contato"
+  },
+  "hero": {
+    "role": "Desenvolvedor Backend & Fullstack",
+    "tagline": "Programação não é sobre linguagem, é sobre lógica, arquitetura e impacto.",
+    "ctaContact": "Entrar em contato",
+    "ctaAbout": "Conhecer mais",
+    "scrollDown": "Rolar para baixo"
+  },
+  "about": {
+    "label": "Apresentação",
+    "title": "Sobre Mim",
+    "p1": "Desenvolvedor com foco em backend, arquitetura de APIs RESTful e construção de sistemas web robustos. Trabalho com linguagens como Java, Node.js e Python, sempre prezando pela manutenibilidade e boas práticas.",
+    "p2": "Acredito que boas soluções nascem da combinação de lógica clara, estrutura bem pensada e código limpo. Busco continuamente evoluir a qualidade das minhas entregas e encarar novos desafios técnicos.",
+    "specialtyLabel": "Especialidade Principal",
+    "specialtyValue": "Engenharia Backend & APIs"
+  },
+  "skills": {
+    "label": "Tecnologias",
+    "title": "Conhecimentos Técnicos",
+    "backend": "Desenvolvimento Backend",
+    "devops": "DevOps e Containerização",
+    "frontend": "Desenvolvimento Frontend",
+    "database": "Bancos de Dados"
+  },
+  "projects": {
+    "label": "Portfólio",
+    "title": "Projetos Em Destaque"
+  },
+  "contact": {
+    "label": "Vamos conversar",
+    "title": "Contato",
+    "subtitle": "Tem um projeto ou dúvida técnica? Envie uma mensagem no formulário abaixo ou conecte-se pelas redes.",
+    "nameLabel": "Seu Nome",
+    "namePlaceholder": "Ex: João Silva",
+    "emailLabel": "Seu E-mail",
+    "emailPlaceholder": "exemplo@dominio.com",
+    "messageLabel": "Sua Mensagem",
+    "messagePlaceholder": "Escreva sua mensagem aqui...",
+    "sendButton": "Enviar Mensagem",
+    "sendingButton": "Enviando...",
+    "success": "Mensagem enviada com sucesso! Entrarei em contato em breve.",
+    "errorValidation": "Por favor, preencha os campos corretamente.",
+    "error503Title": "Formulário Temporariamente Indisponível",
+    "error503Desc": "O serviço de envio direto de e-mail não está configurado neste ambiente no momento.",
+    "directEmail": "Enviar e-mail direto",
+    "linkedIn": "Ver perfil no LinkedIn",
+    "errorUnexpected": "Ocorreu um erro ao enviar. Tente novamente mais tarde."
+  },
+  "footer": {
+    "rights": "Todos os direitos reservados.",
+    "backToTop": "Voltar ao topo"
+  },
+  "seo": {
+    "title": "Paulo Victor Olympio | Desenvolvedor Backend & Fullstack",
+    "description": "Portfólio profissional de Paulo Victor Olympio. Desenvolvedor Fullstack com foco em Backend, Java, Node.js, TypeScript e arquitetura de software."
+  },
+  "accessibility": {
+    "skipLink": "Pular para o conteúdo principal",
+    "themeToggle": "Alternar tema claro/escuro",
+    "languageToggle": "Alternar idioma (Português / Inglês)",
+    "socialGithub": "Perfil no GitHub",
+    "socialLinkedin": "Perfil no LinkedIn",
+    "socialEmail": "Enviar e-mail para Paulo Victor"
+  }
+}

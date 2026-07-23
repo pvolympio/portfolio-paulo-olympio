@@ -1,7 +1,7 @@
 'use client'
 
-import Editor from '@monaco-editor/react'
 import { useState } from 'react'
+import { Check, Copy, ExternalLink } from 'lucide-react'
 
 interface ProjectCodeViewerProps {
   code: string
@@ -16,71 +16,78 @@ export default function ProjectCodeViewer({
   title,
   githubLink
 }: ProjectCodeViewerProps) {
-  const editorOptions = {
-    theme: 'vs-dark',
-    fontSize: 14,
-    lineNumbers: 'on' as const,
-    minimap: { enabled: false },
-    readOnly: true,
-    wordWrap: 'on' as const,
-    scrollBeyondLastLine: false,
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
+  const lines = code.trim().split('\n')
+
   return (
-    <section style={{ marginBottom: '48px', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-      {/* Cabeçalho */}
+    <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border)', background: 'var(--bg2)' }}>
+      {/* Header */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '16px 24px',
-        background: 'var(--bg2)',
+        padding: '12px 20px',
+        background: 'var(--bg3)',
         borderBottom: '1px solid var(--border)'
       }}>
-        <h3 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '1.125rem',
-          fontWeight: 600,
-          color: '#fff',
-          margin: 0
-        }}>
-          {title}
-        </h3>
-        {githubLink && (
-          <a
-            href={githubLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.875rem',
-              color: 'var(--accent2)',
-              textDecoration: 'none',
-              transition: 'opacity 0.2s'
-            }}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--accent2)', textTransform: 'uppercase', background: 'rgba(105,89,205,0.1)', padding: '2px 8px', borderRadius: 4 }}>
+            {language}
+          </span>
+          <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text)', margin: 0 }}>
+            {title}
+          </h4>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button
+            onClick={handleCopy}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'transparent', border: 'none', color: 'var(--muted)', cursor: 'pointer', fontSize: 12 }}
+            aria-label="Copiar código"
           >
-            Ver no GitHub
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <path d="M15 3h6v6"></path>
-              <path d="M10 14V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v6"></path>
-            </svg>
-          </a>
-        )}
+            {copied ? <Check size={14} style={{ color: '#28c840' }} /> : <Copy size={14} />}
+            <span>{copied ? 'Copiado!' : 'Copiar'}</span>
+          </button>
+
+          {githubLink && (
+            <a
+              href={githubLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontSize: 12, color: 'var(--accent2)', textDecoration: 'none'
+              }}
+            >
+              GitHub <ExternalLink size={12} />
+            </a>
+          )}
+        </div>
       </div>
 
-      {/* Editor de código */}
-      <div style={{ height: '320px' }}>
-        <Editor
-          height="100%"
-          width="100%"
-          language={language.toLowerCase()} // ex: 'java', 'javascript', 'python'
-          value={code}
-          options={editorOptions}
-        />
+      {/* Lightweight Code Container */}
+      <div style={{ padding: '16px', overflowX: 'auto', maxHeight: 300, fontFamily: 'var(--font-mono)', fontSize: 13, lineHeight: 1.6, color: 'var(--text)' }}>
+        <pre style={{ margin: 0, display: 'table', width: '100%' }}>
+          <code>
+            {lines.map((line, idx) => (
+              <div key={idx} style={{ display: 'table-row' }}>
+                <span style={{ display: 'table-cell', userSelect: 'none', paddingRight: 16, color: 'var(--muted)', textAlign: 'right', opacity: 0.5, fontSize: 12 }}>
+                  {idx + 1}
+                </span>
+                <span style={{ display: 'table-cell', whiteSpace: 'pre' }}>
+                  {line}
+                </span>
+              </div>
+            ))}
+          </code>
+        </pre>
       </div>
-    </section>
+    </div>
   )
 }

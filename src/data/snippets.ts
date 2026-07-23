@@ -253,7 +253,7 @@ export default function Dashboard() {
       <div className="metrics-grid">
         <Card title="Usuários Ativos" value={metrics.users} icon="users" />
         <Card title="Pagamentos Processados" value={metrics.payments} icon="credit-card" />
-        <Card title="Revenue (USD)" value={\`\$\${metrics.revenue.toFixed(2)}\`} icon="dollar-sign" />
+        <Card title="Revenue (USD)" value={'$' + metrics.revenue.toFixed(2)} icon="dollar-sign" />
       </div>
 
       <div className="chart-container">

@@ -1,32 +1,27 @@
 'use client'
-import { useState, useEffect } from 'react'
+
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Sun, Moon, Globe } from 'lucide-react'
+import { Menu, X, Sun, Moon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { useParams } from 'next/navigation'
-
-const links = [
-  { href: '#sobre',    label: 'Sobre'    },
-  { href: '#skills',   label: 'Skills'   },
-  { href: '#projetos', label: 'Projetos' },
-  { href: '#contato',  label: 'Contato'  },
-]
-
-const NAV_COLORS: Record<string, string> = {
-  '#sobre': 'var(--accent2)',
-  '#skills': 'var(--accent2)',
-  '#projetos': 'var(--accent2)',
-  '#contato': 'var(--accent2)',
-}
+import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { projects } from '@/data'
 
 export default function Navbar() {
+  const tNav = useTranslations('nav')
+  const tAccess = useTranslations('accessibility')
   const [scrolled, setScrolled] = useState(false)
   const [active, setActive] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
   const params = useParams()
-  const currentLocale = params?.locale || 'pt'
+  const pathname = usePathname()
+  const router = useRouter()
+  const currentLocale = (params?.locale as string) || 'pt'
 
   useEffect(() => setMounted(true), [])
 
@@ -35,6 +30,18 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Close mobile menu on Escape key press & return focus
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && menuOpen) {
+        setMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [menuOpen])
 
   // ScrollSpy — mark active section
   useEffect(() => {
@@ -56,183 +63,219 @@ export default function Navbar() {
     return () => observer.disconnect()
   }, [])
 
+  // Navigation items — conditionally include Projects link ONLY when projects exist
+  const navItems = [
+    { href: '#sobre', label: tNav('about') },
+    { href: '#skills', label: tNav('skills') },
+    ...(projects && projects.length > 0 ? [{ href: '#projetos', label: tNav('projects') }] : []),
+    { href: '#contato', label: tNav('contact') },
+  ]
+
+  const switchLanguage = (newLocale: string) => {
+    const currentHash = typeof window !== 'undefined' ? window.location.hash : ''
+    // Replace locale prefix in path
+    const pathWithoutLocale = pathname.replace(/^\/(pt|en)/, '')
+    const targetPath = `/${newLocale}${pathWithoutLocale || ''}${currentHash}`
+    router.push(targetPath)
+  }
+
   return (
-    <motion.nav
+    <motion.header
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      role="navigation"
-      aria-label="Navegação principal"
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         padding: '0 2rem', height: 64,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: scrolled ? 'rgba(7, 7, 15, 0.85)' : 'transparent',
+        background: scrolled ? 'var(--nav-bg)' : 'transparent',
         backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(105, 89, 205, 0.12)' : 'none',
+        borderBottom: scrolled ? '1px solid var(--border)' : 'none',
         transition: 'all 0.4s ease',
       }}
     >
-      {/* Logo */}
-      <motion.a
-        href="#"
-        aria-label="Página inicial"
-        whileHover={{ scale: 1.05 }}
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 22, fontWeight: 800,
-          color: 'var(--accent2)',
-          letterSpacing: '-0.5px',
-        }}
+      <nav
+        role="navigation"
+        aria-label="Navegação principal"
+        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
       >
-        PV<span style={{ color: 'var(--accent)', fontSize: 28 }}>.</span>
-      </motion.a>
-
-      {/* Mobile hamburger */}
-      <button
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
-        style={{
-          display: 'none',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--text)',
-          padding: 4,
-          lineHeight: 0,
-        }}
-        className="mobile-menu-btn"
-      >
-        {menuOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-
-      {/* Desktop links */}
-      <div className="nav-links" style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
-        {links.map((l) => (
-          <motion.a
-            key={l.href}
-            href={l.href}
-            whileHover={{ color: 'var(--accent2)' }}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 13,
-              color: active === l.href ? NAV_COLORS[l.href] || 'var(--muted2)' : 'var(--muted2)',
-              transition: 'color 0.2s',
-              position: 'relative',
-            }}
-          >
-            <span style={{ color: 'var(--accent)', marginRight: 4, fontSize: 11 }}>
-              {String(links.indexOf(l) + 1).padStart(2, '0')}.
-            </span>
-            {l.label}
-          </motion.a>
-        ))}
+        {/* Logo */}
         <motion.a
-          href="mailto:pvolympio@gmail.com"
-          whileHover={{ scale: 1.04, backgroundColor: 'var(--accent)' }}
-          whileTap={{ scale: 0.97 }}
+          href={`/${currentLocale}`}
+          aria-label="Página inicial"
+          whileHover={{ scale: 1.05 }}
           style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12, padding: '8px 18px',
-            border: '1px solid var(--accent)',
-            borderRadius: 6,
+            fontFamily: 'var(--font-display)',
+            fontSize: 22, fontWeight: 800,
             color: 'var(--accent2)',
-            background: 'transparent',
-            transition: 'all 0.2s',
-            cursor: 'pointer',
+            letterSpacing: '-0.5px',
+            textDecoration: 'none'
           }}
         >
-          Email
+          PV<span style={{ color: 'var(--accent)', fontSize: 28 }}>.</span>
         </motion.a>
-        {mounted && (
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            aria-label="Alternar tema"
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--muted2)',
-              display: 'flex',
-              alignItems: 'center',
-              padding: 4
-            }}
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-        )}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginLeft: 8 }}>
-          <a href="/pt" style={{ color: currentLocale === 'pt' ? 'var(--accent)' : 'var(--muted2)', fontSize: 13, fontWeight: 'bold' }}>PT</a>
-          <span style={{ color: 'var(--border2)' }}>|</span>
-          <a href="/en" style={{ color: currentLocale === 'en' ? 'var(--accent)' : 'var(--muted2)', fontSize: 13, fontWeight: 'bold' }}>EN</a>
-        </div>
-      </div>
 
-      {/* Mobile menu overlay */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'fixed', top: 64, left: 0, right: 0, bottom: 0,
-              background: 'rgba(7, 7, 15, 0.95)',
-              backdropFilter: 'blur(20px)',
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center', gap: 32,
-              zIndex: 99,
-            }}
-          >
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 18,
-                  color: active === l.href ? 'var(--accent2)' : 'var(--muted2)',
-                }}
-              >
-                {l.label}
-              </a>
-            ))}
-            <a
-              href="mailto:pvolympio@gmail.com"
-              onClick={() => setMenuOpen(false)}
+        {/* Mobile menu toggle */}
+        <button
+          ref={menuButtonRef}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={menuOpen}
+          style={{
+            display: 'none',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text)',
+            padding: 8,
+          }}
+          className="mobile-menu-btn"
+        >
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Desktop Links & Controls */}
+        <div className="nav-links" style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
+          {navItems.map((item, idx) => (
+            <motion.a
+              key={item.href}
+              href={item.href}
+              whileHover={{ color: 'var(--accent2)' }}
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: 16, padding: '12px 28px',
-                border: '1px solid var(--accent)',
-                borderRadius: 8,
-                color: 'var(--accent2)',
-                marginTop: 8,
+                fontSize: 13,
+                color: active === item.href ? 'var(--accent2)' : 'var(--muted2)',
+                transition: 'color 0.2s',
+                textDecoration: 'none',
               }}
             >
-              Email
-            </a>
-            {mounted && (
-              <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                aria-label="Alternar tema"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--muted2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: 8,
-                  marginTop: 16
-                }}
-              >
-                {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
-              </button>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+              <span style={{ color: 'var(--accent)', marginRight: 4, fontSize: 11 }}>
+                {String(idx + 1).padStart(2, '0')}.
+              </span>
+              {item.label}
+            </motion.a>
+          ))}
+
+          {/* Theme Toggle Button */}
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              aria-label={tAccess('themeToggle')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--muted2)',
+                display: 'flex',
+                alignItems: 'center',
+                padding: 6,
+                borderRadius: 6,
+              }}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+          )}
+
+          {/* Language Switcher */}
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+            <button
+              onClick={() => switchLanguage('pt')}
+              aria-label="Mudar para Português"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: currentLocale === 'pt' ? 'var(--accent)' : 'var(--muted2)',
+                padding: 2
+              }}
+            >
+              PT
+            </button>
+            <span style={{ color: 'var(--border)' }}>|</span>
+            <button
+              onClick={() => switchLanguage('en')}
+              aria-label="Switch to English"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: currentLocale === 'en' ? 'var(--accent)' : 'var(--muted2)',
+                padding: 2
+              }}
+            >
+              EN
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              style={{
+                position: 'fixed', top: 64, left: 0, right: 0, bottom: 0,
+                background: 'var(--bg)',
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', gap: 28,
+                zIndex: 99,
+                padding: '2rem'
+              }}
+            >
+              {navItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 20,
+                    color: active === item.href ? 'var(--accent2)' : 'var(--text)',
+                    textDecoration: 'none'
+                  }}
+                >
+                  {item.label}
+                </a>
+              ))}
+
+              <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginTop: 16 }}>
+                {mounted && (
+                  <button
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                    aria-label={tAccess('themeToggle')}
+                    style={{
+                      background: 'var(--bg2)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      color: 'var(--text)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: 10
+                    }}
+                  >
+                    {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                  </button>
+                )}
+
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 16, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                  <button
+                    onClick={() => { setMenuOpen(false); switchLanguage('pt'); }}
+                    style={{ background: 'none', border: 'none', color: currentLocale === 'pt' ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer' }}
+                  >
+                    PT
+                  </button>
+                  <span>|</span>
+                  <button
+                    onClick={() => { setMenuOpen(false); switchLanguage('en'); }}
+                    style={{ background: 'none', border: 'none', color: currentLocale === 'en' ? 'var(--accent)' : 'var(--muted)', cursor: 'pointer' }}
+                  >
+                    EN
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+    </motion.header>
   )
 }

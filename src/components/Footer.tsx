@@ -1,7 +1,10 @@
 'use client'
-import { person } from '@/data'
+
+import { useTranslations } from 'next-intl'
 
 export default function Footer() {
+  const t = useTranslations('footer')
+
   return (
     <footer style={{
       borderTop: '1px solid var(--border)',
@@ -23,14 +26,17 @@ export default function Footer() {
         fontFamily: 'var(--font-mono)', fontSize: 12,
         color: 'var(--muted)',
       }}>
-        © {new Date().getFullYear()} Paulo Victor Olympio — Feito com lógica e impacto.
+        © {new Date().getFullYear()} Paulo Victor Olympio. {t('rights')}
       </span>
-      <span style={{
-        fontFamily: 'var(--font-mono)', fontSize: 12,
-        color: 'var(--accent)',
-      }}>
-        Next.js + Framer Motion
-      </span>
+      <a
+        href="#home"
+        style={{
+          fontFamily: 'var(--font-mono)', fontSize: 12,
+          color: 'var(--accent)', textDecoration: 'none'
+        }}
+      >
+        ↑ {t('backToTop')}
+      </a>
     </footer>
   )
 }
