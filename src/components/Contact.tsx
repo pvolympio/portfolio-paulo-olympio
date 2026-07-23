@@ -5,19 +5,10 @@ import { useRef, useState } from 'react'
 import { Github, Linkedin, Mail, ArrowUpRight, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useTranslations } from 'next-intl'
 import { person } from '@/data'
+import { contactSchema, ContactFormData } from '@/data/contactSchema'
 import { SectionTitle } from './About'
-
-const contactSchema = z.object({
-  name: z.string().trim().min(2),
-  email: z.string().trim().email(),
-  message: z.string().trim().min(5).max(2000),
-  website: z.string().optional() // Honeypot field
-})
-
-type ContactFormData = z.infer<typeof contactSchema>
 
 export default function Contact() {
   const t = useTranslations('contact')
@@ -43,7 +34,7 @@ export default function Contact() {
         body: JSON.stringify(data)
       })
 
-      const json = await res.json()
+      const json = await res.json().catch(() => ({}))
 
       if (res.status === 503) {
         setStatusState('unavailable')
@@ -51,7 +42,7 @@ export default function Contact() {
       } else if (res.ok) {
         setStatusState('success')
         setServerMsg(t('success'))
-        reset()
+        reset() // Clean form ONLY on real success
       } else if (res.status === 400) {
         setStatusState('validation_error')
         setServerMsg(json.error || t('errorValidation'))
@@ -59,7 +50,7 @@ export default function Contact() {
         setStatusState('error')
         setServerMsg(t('errorUnexpected'))
       }
-    } catch (err) {
+    } catch {
       setStatusState('error')
       setServerMsg(t('errorUnexpected'))
     } finally {
@@ -230,15 +221,12 @@ export default function Contact() {
           </div>
 
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {links.map(({ label, href, Icon, user }, i) => (
+            {links.map(({ label, href, Icon, user }) => (
               <motion.a
                 key={label}
                 href={href}
                 target={href.startsWith('mailto:') ? undefined : '_blank'}
                 rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.3 + i * 0.08 }}
                 whileHover={{ scale: 1.04, borderColor: 'var(--accent)', backgroundColor: 'rgba(105,89,205,0.08)' }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 12,
