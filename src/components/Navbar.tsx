@@ -6,7 +6,7 @@ import { Menu, X, Sun, Moon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { projects } from '@/data'
+import { hasConfiguredProjects } from '@/lib/projects/validation'
 
 export default function Navbar() {
   const tNav = useTranslations('nav')
@@ -22,6 +22,8 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const currentLocale = (params?.locale as string) || 'pt'
+
+  const showProjects = hasConfiguredProjects()
 
   useEffect(() => setMounted(true), [])
 
@@ -63,11 +65,11 @@ export default function Navbar() {
     return () => observer.disconnect()
   }, [])
 
-  // Navigation items — conditionally include Projects link ONLY when projects exist
+  // Navigation items — conditionally include Projects link ONLY when valid project sources exist
   const navItems = [
     { href: '#sobre', label: tNav('about') },
     { href: '#skills', label: tNav('skills') },
-    ...(projects && projects.length > 0 ? [{ href: '#projetos', label: tNav('projects') }] : []),
+    ...(showProjects ? [{ href: '#projetos', label: tNav('projects') }] : []),
     { href: '#contato', label: tNav('contact') },
   ]
 

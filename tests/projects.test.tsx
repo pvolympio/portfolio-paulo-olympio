@@ -1,12 +1,16 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
 import Projects from '../src/components/Projects'
-import { projects } from '../src/data'
+import { hasConfiguredProjects } from '../src/lib/projects/validation'
 
 // Mock next-intl
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
   useParams: () => ({ locale: 'pt' }),
+}))
+
+vi.mock('next-intl/server', () => ({
+  getTranslations: async () => (key: string) => key,
 }))
 
 // Mock next/navigation
@@ -21,13 +25,13 @@ vi.mock('next-themes', () => ({
   useTheme: () => ({ theme: 'dark', setTheme: vi.fn() }),
 }))
 
-describe('Projects Section Conditioning', () => {
-  it('should verify projects array is empty in production state', () => {
-    expect(projects).toEqual([])
+describe('Projects Component & Nav Conditioning', () => {
+  it('should verify hasConfiguredProjects is false when projectSources is empty', () => {
+    expect(hasConfiguredProjects()).toBe(false)
   })
 
-  it('should render null from Projects component when projects array is empty', () => {
-    const { container } = render(<Projects />)
-    expect(container.firstChild).toBeNull()
+  it('should render null from Projects component when no projects are configured', async () => {
+    const Component = await Projects({ locale: 'pt' })
+    expect(Component).toBeNull()
   })
 })

@@ -30,7 +30,11 @@
   },
   "projects": {
     "label": "Portfólio",
-    "title": "Projetos Em Destaque"
+    "title": "Projetos Em Destaque",
+    "viewProject": "Ver projeto",
+    "viewCode": "Ver código",
+    "technologies": "Tecnologias utilizadas",
+    "newTabNotice": "(abre em nova aba)"
   },
   "contact": {
     "label": "Vamos conversar",

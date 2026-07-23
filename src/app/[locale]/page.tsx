@@ -7,7 +7,7 @@ import Projects from '@/components/Projects'
 import Contact from '@/components/Contact'
 import Footer from '@/components/Footer'
 
-export default function Home() {
+export default function Home({ params: { locale } }: { params: { locale: string } }) {
   return (
     <>
       <ParticleBackground />
@@ -17,7 +17,7 @@ export default function Home() {
           <Hero />
           <About />
           <Skills />
-          <Projects />
+          <Projects locale={locale} />
           <Contact />
         </main>
         <Footer />
