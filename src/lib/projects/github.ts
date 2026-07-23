@@ -40,14 +40,17 @@ export async function fetchGitHubRepoDetails(
     headers['Authorization'] = `Bearer ${token}`
   }
 
+  // In development, do not cache stale empty responses so changes appear instantly
+  const revalidateTime = process.env.NODE_ENV === 'development' ? 0 : 3600
+
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
+    const timeoutId = setTimeout(() => controller.abort(), 8000)
 
     const repoRes = await fetch(`https://api.github.com/repos/${parsed.owner}/${parsed.repo}`, {
       headers,
       signal: controller.signal,
-      next: { revalidate: 86400 } // Revalidate daily
+      next: { revalidate: revalidateTime }
     }).catch(() => null)
 
     clearTimeout(timeoutId)
@@ -85,7 +88,7 @@ export async function fetchGitHubRepoDetails(
     try {
       const langRes = await fetch(`https://api.github.com/repos/${parsed.owner}/${parsed.repo}/languages`, {
         headers,
-        next: { revalidate: 86400 }
+        next: { revalidate: revalidateTime }
       })
       if (langRes.ok) {
         const langData = await langRes.json()

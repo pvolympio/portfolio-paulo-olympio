@@ -7,10 +7,11 @@ import {
 import { compileTechnologies } from '../src/lib/projects/github'
 import { generateFallbackSvg } from '../src/lib/projects/preview'
 import { GET as previewRouteHandler } from '../src/app/api/project-preview/[slug]/route'
+import { projectSources } from '../src/data/project-sources'
 
 describe('Project Sources, Validation & Resolution Layer', () => {
-  it('should return false for hasConfiguredProjects when projectSources is empty', () => {
-    expect(hasConfiguredProjects()).toBe(false)
+  it('should verify hasConfiguredProjects accurately reflects projectSources state', () => {
+    expect(hasConfiguredProjects()).toBe(projectSources.length > 0)
   })
 
   it('should parse and normalize valid GitHub and demo URLs', () => {

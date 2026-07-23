@@ -47,6 +47,7 @@ export default async function Projects({ locale }: { locale: string }) {
                   src={project.previewUrl}
                   alt={project.previewAlt}
                   fill
+                  unoptimized
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 500px"
                   style={{ objectFit: 'cover', objectPosition: 'top' }}
                   loading="lazy"

@@ -35,8 +35,8 @@ export async function getProjects(locale: string): Promise<Project[]> {
         previewUrl: `/api/project-preview/${parsed.slug}`,
         previewAlt,
       })
-    } catch {
-      // Skip invalid project source gracefully without crashing application
+    } catch (err) {
+      console.error('Error resolving project source:', err)
     }
   }
 

@@ -4,11 +4,8 @@ export interface ProjectSource {
 }
 
 export const projectSources: ProjectSource[] = [
-  // To add a project, simply provide the GitHub repository URL and the live Vercel demo URL:
-  /*
   {
     githubUrl: 'https://github.com/pvolympio/fut-store',
-    demoUrl: 'https://fut-store.vercel.app',
+    demoUrl: 'https://fut-store-three.vercel.app',
   },
-  */
 ]
